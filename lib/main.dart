@@ -1,35 +1,53 @@
-Future<int> fetchNumber1() async {
-  await Future.delayed(Duration(seconds: 2), () {
-    return 2;
-  });
-  return 2;
+import 'dart:convert';
+
+import 'package:dart_async_project/model.dart';
+import 'package:dio/dio.dart';
+
+Future<void> getMainIngredient() async {
+  final dio = Dio();
+  // dio.options.connectTimeout = Duration(milliseconds: 5);
+  dio.options.receiveTimeout = Duration(microseconds: 3);
+  var data = await dio.get(
+    "http://www.themealdb.com/api/json/v1/1/filter.php?i=chicken_breast",
+  );
+  print("Run Time Type: ${data.runtimeType}");
+// From Internet JSON
+  var decodedData = jsonDecode(data.toString());
+  // print("Run Time Type: ${decodedData.runtimeType}");
+  ResponseModel responseModel = ResponseModel.fromJson(decodedData);
+
+  for (var items in responseModel.meals) {
+    print("${items.strMeal} : ${items.idMeal}");
+  }
 }
 
-Future<int> fetchNumber2() async {
-  await Future.delayed(Duration(seconds: 2));
-  return 2;
+Future<void> postMethod() async {
+  final dio = Dio();
+  var response = await dio.post(
+    "https://api.restful-api.dev/objects",
+    data: {
+      "name": "YUNESH",
+      "data": {
+        "year": 2019,
+        "price": 1849.99,
+        "CPU model": "Intel Core i9",
+        "Hard disk size": "1 TB"
+      }
+    },
+  );
+  print(response);
+
+//   print("Run Time Type: ${data.runtimeType}");
+// // From Internet JSON
+//   var decodedData = jsonDecode(data.toString());
+//   // print("Run Time Type: ${decodedData.runtimeType}");
+//   ResponseModel responseModel = ResponseModel.fromJson(decodedData);
+
+//   for (var items in responseModel.meals) {
+//     print("${items.strMeal} : ${items.idMeal}");
+//   }
 }
 
-Future<int> addNumbers() async {
-  int n1 = await fetchNumber1();
-  int n2 = await fetchNumber2();
-  return n1 + n2;
+void main() {
+  getMainIngredient();
 }
-
-void main() async {
-  int data = await addNumbers();
-  print(data);
-}
-// Task
-// Future<int> fetchNumber1() async {
-//   await Future.delayed(Duration(seconds: 2));
-//   return 2;
-// }
-
-
-
-// void main()  {
-//   int data =  fetchNumber1();
-
-//   print(data);
-// }
